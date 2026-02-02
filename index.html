@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Enterprise Automation Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #f9fafb;
+      color: #1f2937;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 16px;
+      max-width: 600px;
+    }
+
+    /* ===== Language Switch ===== */
+    .lang-switch {
+      position: fixed;
+      top: 16px;
+      right: 24px;
+      z-index: 9999;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 6px;
+    }
+
+    .lang-btn.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    /* ===== WhatsApp Floating ===== */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+    }
+
+    .wa-bubble {
+      background: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: 220px;
+    }
+
+    .wa-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #fff;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      transition: transform .25s ease, background .25s ease;
+    }
+
+    .wa-btn:hover {
+      transform: scale(1.08);
+      background: #1ebe5d;
+    }
+
+    @media (max-width: 480px) {
+      .wa-bubble { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 data-translate="title">Solusi Automasi Enterprise</h1>
+  <p data-translate="subtitle">
+    Layanan automasi bisnis profesional untuk perusahaan, institusi, dan organisasi.
+  </p>
+
+  <!-- Language Switch -->
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="id">ID</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
+
+  <!-- WhatsApp Floating -->
+  <div class="whatsapp-float" id="waBox">
+    <div class="wa-bubble" data-translate="wa_bubble">
+      <strong>Konsultasi Automasi</strong><br>Gratis & Rahasia
+    </div>
+    <a class="wa-btn" id="waButton" target="_blank" aria-label="WhatsApp">💬</a>
+  </div>
+
+  <script>
+    /* ================= TRANSLATIONS ================= */
+    const translations = {
+      id: {
+        title: "Solusi Automasi Enterprise",
+        subtitle: "Layanan automasi bisnis profesional untuk perusahaan, institusi, dan organisasi.",
+        wa_bubble: "<strong>Konsultasi Automasi</strong><br>Gratis & Rahasia",
+        wa_message: "Halo, saya ingin konsultasi terkait solusi automasi bisnis. Mohon informasinya. Terima kasih.",
+        page_title: "Solusi Automasi Enterprise"
+      },
+      en: {
+        title: "Enterprise Automation Solutions",
+        subtitle: "Professional business automation services for companies and institutions.",
+        wa_bubble: "<strong>Automation Consultation</strong><br>Free & Confidential",
+        wa_message: "Hello, I would like to consult regarding business automation solutions. Thank you.",
+        page_title: "Enterprise Automation Solutions"
+      }
+    };
+
+    const phoneNumber = "6281216691888";
+    const langButtons = document.querySelectorAll(".lang-btn");
+    const translateEls = document.querySelectorAll("[data-translate]");
+    const waButton = document.getElementById("waButton");
+    const waBox = document.getElementById("waBox");
+
+    function setLanguage(lang) {
+      localStorage.setItem("lang", lang);
+      document.documentElement.lang = lang;
+      document.title = translations[lang].page_title;
+
+      langButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
+
+      translateEls.forEach(el => {
+        const key = el.dataset.translate;
+        el.innerHTML = translations[lang][key];
+      });
+
+      waButton.href =
+        "https://wa.me/" +
+        phoneNumber +
+        "?text=" +
+        encodeURIComponent(translations[lang].wa_message);
+    }
+
+    langButtons.forEach(btn => {
+      btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
+    });
+
+    /* Init language */
+    setLanguage(localStorage.getItem("lang") || "id");
+
+    /* Office hour control (08–17 WIB) */
+    (function () {
+      const hour = new Date().getHours();
+      if (hour < 8 || hour >= 17) {
+        waBox.style.display = "none";
+      }
+    })();
+  </script>
+
+</body>
+</html>
