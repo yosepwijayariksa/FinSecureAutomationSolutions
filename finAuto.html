@@ -1,1100 +1,182 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinSecure Automation - Automasi Komunikasi Enterprise untuk Lembaga Keuangan</title>
-    <meta name="description" content="Solusi automasi komunikasi enterprise untuk perbankan. Integrasi aman WhatsApp Business API & Telegram Bot untuk notifikasi, approval, dan monitoring operasional.">
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <title>Enterprise Automation Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        /* --- Global Styles & Variables --- */
-        :root {
-            --primary-color: #0052CC;
-            --secondary-color: #00A0DF;
-            --dark-color: #1E2B37;
-            --light-color: #F4F6F8;
-            --text-color: #4A5568;
-            --heading-font: 'Inter', sans-serif;
-            --body-font: 'Inter', sans-serif;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #f9fafb;
+      color: #1f2937;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
 
-        html {
-            scroll-behavior: smooth;
-        }
+    p {
+      font-size: 16px;
+      max-width: 600px;
+    }
 
-        body {
-            font-family: var(--body-font);
-            background-color: #ffffff;
-            color: var(--text-color);
-            line-height: 1.7;
-        }
+    /* ===== Language Switch ===== */
+    .lang-switch {
+      position: fixed;
+      top: 16px;
+      right: 24px;
+      z-index: 9999;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 6px;
+    }
 
-        section {
-            padding: 80px 0;
-            overflow: hidden; /* Contain animation effects */
-        }
+    .lang-btn.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
 
-        h1, h2, h3 {
-            font-family: var(--heading-font);
-            font-weight: 700;
-            color: var(--dark-color);
-            line-height: 1.3;
-        }
+    /* ===== WhatsApp Floating ===== */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+    }
 
-        h1 { font-size: 3rem; }
-        h2 { font-size: 2.2rem; margin-bottom: 20px; text-align: center; }
-        h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--primary-color); }
+    .wa-bubble {
+      background: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: 220px;
+    }
 
-        p { margin-bottom: 15px; }
+    .wa-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #25D366;
+      color: #fff;
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      transition: transform .25s ease, background .25s ease;
+    }
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+    .wa-btn:hover {
+      transform: scale(1.08);
+      background: #1ebe5d;
+    }
 
-        a:hover {
-            color: var(--secondary-color);
-        }
-
-        /* --- Buttons --- */
-        .btn {
-            display: inline-block;
-            padding: 12px 28px;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: #ffffff;
-        }
-
-        .btn-primary:hover {
-            background-color: #003d99;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 82, 204, 0.3);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: #ffffff;
-        }
-
-        /* --- Header & Navigation --- */
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-        }
-
-        .nav-container {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .logo i {
-            margin-right: 8px;
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-links a {
-            font-weight: 500;
-            color: var(--dark-color);
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-links a.active-link {
-            color: var(--primary-color);
-        }
-        
-        .nav-links a.active-link::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 3px;
-            background-color: var(--secondary-color);
-            bottom: -18px;
-            left: 0;
-            border-radius: 2px;
-        }
-
-        /* --- Language Switcher --- */
-        .language-switcher {
-            display: flex;
-            gap: 5px;
-        }
-        .lang-btn {
-            background: none;
-            border: 1px solid var(--dark-color);
-            color: var(--dark-color);
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        .lang-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        .lang-btn:hover:not(.active) {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-
-        .mobile-menu {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* --- Hero Section --- */
-        #hero {
-            padding-top: 120px;
-            background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
-            text-align: center;
-        }
-
-        .hero-image-container {
-            max-width: 900px;
-            margin: 50px auto 0;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
-        }
-
-        .hero-image {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* --- Text Animation --- */
-        .section-content-wrapper > .animate-text-item {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .section-content-wrapper.animate-text > .animate-text-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Stagger effect for list items and cards */
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(1) { transition-delay: 0.1s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(2) { transition-delay: 0.2s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(3) { transition-delay: 0.3s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(4) { transition-delay: 0.4s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(5) { transition-delay: 0.5s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(6) { transition-delay: 0.6s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(7) { transition-delay: 0.7s; }
-        .section-content-wrapper.animate-text > .animate-text-item:nth-child(8) { transition-delay: 0.8s; }
-
-
-        /* --- Content Sections --- */
-        .section-content {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
-
-        .card {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            border-top: 4px solid var(--primary-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .card h3 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card i {
-            font-size: 1.8rem;
-            color: var(--secondary-color);
-        }
-
-        .card ul {
-            list-style: none;
-            text-align: left;
-            padding-left: 10px;
-        }
-
-        .card ul li {
-            margin-bottom: 10px;
-            position: relative;
-            padding-left: 25px;
-        }
-
-        .card ul li::before {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: var(--secondary-color);
-            position: absolute;
-            left: 0;
-            top: 2px;
-        }
-
-        /* --- Architecture Diagram --- */
-        .arch-diagram {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 50px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .arch-box {
-            background-color: var(--light-color);
-            border: 2px solid var(--primary-color);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            flex: 1;
-            min-width: 200px;
-        }
-        .arch-arrow {
-            font-size: 2rem;
-            color: var(--primary-color);
-        }
-
-        /* --- Security & Compliance --- */
-        #security {
-            background-color: var(--light-color);
-        }
-        .compliance-notice {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-top: 40px;
-            font-weight: 500;
-        }
-        .compliance-notice i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        /* --- Engagement Model --- */
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 50px auto;
-        }
-        .timeline::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            background-color: var(--primary-color);
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
-        }
-        .timeline-item {
-            padding: 10px 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%;
-        }
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -10px;
-            background-color: white;
-            border: 4px solid var(--primary-color);
-            top: 25px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-        .left {
-            left: 0;
-        }
-        .right {
-            left: 50%;
-        }
-        .right::after {
-            left: -10px;
-        }
-        .timeline-content {
-            padding: 20px 30px;
-            background-color: white;
-            position: relative;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        /* --- CTA Section --- */
-        #cta {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            text-align: center;
-        }
-        #cta h2 {
-            color: #ffffff;
-        }
-        #cta p {
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            font-size: 1.1rem;
-        }
-        .cta-buttons .btn {
-            margin: 10px;
-        }
-        .cta-buttons .btn-outline {
-            color: #ffffff;
-            border-color: #ffffff;
-        }
-        .cta-buttons .btn-outline:hover {
-            background-color: #ffffff;
-            color: var(--primary-color);
-        }
-
-        /* --- Footer --- */
-        footer {
-            background-color: var(--dark-color);
-            color: #b0b8c1;
-            padding: 40px 0;
-            text-align: center;
-        }
-        footer p {
-            margin-bottom: 10px;
-        }
-        footer a {
-            color: #b0b8c1;
-        }
-        footer a:hover {
-            color: #ffffff;
-        }
-        .footer-disclaimer {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            border-top: 1px solid #3a4550;
-            padding-top: 20px;
-        }
-        
-        /* --- Floating WhatsApp Button --- */
-        .whatsapp-float {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            bottom: 40px;
-            right: 40px;
-            background-color: #25d366;
-            color: #FFF;
-            border-radius: 50px;
-            text-align: center;
-            font-size: 30px;
-            box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
-
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-        }
-
-        .whatsapp-float .wa-tooltip {
-            visibility: hidden;
-            width: 160px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            right: 0;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .whatsapp-float .wa-tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            right: 20px;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #333 transparent transparent transparent;
-        }
-
-        .whatsapp-float:hover .wa-tooltip {
-            visibility: visible;
-            opacity: 1;
-        }
-
-
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.8rem; }
-            .nav-links { display: none; }
-            .mobile-menu { display: block; }
-            .timeline::after { left: 31px; }
-            .timeline-item {
-                width: 100%;
-                padding-left: 70px;
-                padding-right: 25px;
-            }
-            .timeline-item::after {
-                left: 21px;
-            }
-            .right {
-                left: 0%;
-            }
-            .nav-links a.active-link::after {
-                bottom: -15px;
-            }
-            .whatsapp-float {
-                width: 50px;
-                height: 50px;
-                font-size: 26px;
-                bottom: 20px;
-                right: 20px;
-            }
-        }
-    </style>
+    @media (max-width: 480px) {
+      .wa-bubble { display: none; }
+    }
+  </style>
 </head>
+
 <body>
 
-    <!-- =================== HEADER & NAVIGATION =================== -->
-    <header>
-        <nav class="container">
-            <a href="#" class="logo"><i class="fas fa-shield-alt"></i> FinSecure Automation</a>
-            <div class="nav-container">
-                <ul class="nav-links">
-                    <li><a href="#tentang-kami" data-translate-link="nav_about">Tentang Kami</a></li>
-                    <li><a href="#layanan" data-translate-link="nav_services">Layanan</a></li>
-                    <li><a href="#use-case" data-translate-link="nav_usecase">Use Case</a></li>
-                    <li><a href="#arsitektur" data-translate-link="nav_architecture">Arsitektur</a></li>
-                    <li><a href="#keamanan" data-translate-link="nav_security">Keamanan</a></li>
-                    <li><a href="#kontak" data-translate-link="nav_contact">Kontak</a></li>
-                </ul>
-                <div class="language-switcher">
-                    <button class="lang-btn active" data-lang="id">ID</button>
-                    <button class="lang-btn" data-lang="en">EN</button>
-                </div>
-            </div>
-            <div class="mobile-menu">
-                <i class="fas fa-bars"></i>
-            </div>
-        </nav>
-    </header>
+  <h1 data-translate="title">Solusi Automasi Enterprise</h1>
+  <p data-translate="subtitle">
+    Layanan automasi bisnis profesional untuk perusahaan, institusi, dan organisasi.
+  </p>
 
-    <main>
-        <!-- =================== HERO SECTION =================== -->
-        <section id="hero">
-            <div class="container section-content-wrapper">
-                <div class="hero-content">
-                    <h1 class="animate-text-item" data-translate="hero_headline">Automasi Komunikasi Aman untuk Lembaga Keuangan</h1>
-                    <p class="animate-text-item" data-translate="hero_subheadline">Automasi notifikasi, approval, dan monitoring operasional bank melalui integrasi WhatsApp, Telegram.</p>
-                    <a href="#kontak" class="btn btn-primary animate-text-item" data-translate="hero_cta">🔘 Request Konsultasi Konfidensial</a>
-                </div>
-                
-                <div class="hero-image-container">
-                    <img src="https://z-cdn-media.chatglm.cn/files/c32b90dd-d5a1-4129-86b9-f0d578e7e4e2.png?auth_key=1870060010-e4aaf97354bd469286a6870b7b99ccaa-0-e08a14af9655b60c6b160a57d8b9c542" alt="Ilustrasi solusi automasi perbankan dengan integrasi WhatsApp dan Telegram" class="hero-image">
-                </div>
-            </div>
-        </section>
+  <!-- Language Switch -->
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="id">ID</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
 
-        <!-- =================== TENTANG KAMI =================== -->
-        <section id="tentang-kami">
-            <div class="container section-content-wrapper">
-                <div class="section-content">
-                    <h2 class="animate-text-item" data-translate="about_title">Tentang Kami</h2>
-                    <p class="animate-text-item" data-translate="about_p1">Kami adalah mitra strategis bagi institusi keuangan dalam menghadapi era transformasi digital. Dengan pengalaman mendalam di industri perbankan, kami memahami bahwa efisiensi operasional harus sejalan dengan prinsip keamanan dan kepatuhan yang ketat.</p>
-                    <p class="animate-text-item" data-translate="about_p2">Fokus kami adalah membangun solusi automasi komunikasi dan workflow digital yang tidak hanya mempercepat proses, tetapi juga memperkuat kontrol internal dan visibilitas manajemen. Setiap solusi kami dirancang untuk menjadi ekstensi yang aman dan andal dari infrastruktur TI Anda, memastikan setiap notifikasi dan alur kerja berjalan sesuai dengan kebijakan internal dan regulasi yang berlaku.</p>
-                </div>
-            </div>
-        </section>
+  <!-- WhatsApp Floating -->
+  <div class="whatsapp-float" id="waBox">
+    <div class="wa-bubble" data-translate="wa_bubble">
+      <strong>Konsultasi Automasi</strong><br>Gratis & Rahasia
+    </div>
+    <a class="wa-btn" id="waButton" target="_blank" aria-label="WhatsApp">💬</a>
+  </div>
 
-        <!-- =================== LAYANAN UTAMA =================== -->
-        <section id="layanan" style="background-color: var(--light-color);">
-            <div class="container section-content-wrapper">
-                <h2 class="animate-text-item" data-translate="services_title">Layanan Utama</h2>
-                <div class="grid">
-                    <div class="card animate-text-item">
-                        <h3><i class="fab fa-whatsapp"></i> <span data-translate="services_whatsapp_title">WhatsApp Automation (Enterprise Use)</span></h3>
-                        <p data-translate="services_whatsapp_desc">Memanfaatkan WhatsApp Business API untuk komunikasi internal yang efisien dan terkontrol.</p>
-                        <ul>
-                            <li data-translate="services_whatsapp_f1">Notifikasi transaksi non-finansial</li>
-                            <li data-translate="services_whatsapp_f2">Approval workflow via WhatsApp</li>
-                            <li data-translate="services_whatsapp_f3">Reminder operasional & SLA</li>
-                            <li data-translate="services_whatsapp_f4">Integrasi WhatsApp Business API</li>
-                        </ul>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fab fa-telegram"></i> <span data-translate="services_telegram_title">Telegram Automation</span></h3>
-                        <p data-translate="services_telegram_desc">Mengoptimalkan Telegram sebagai alat monitoring dan koordinasi tim yang cepat dan aman.</p>
-                        <ul>
-                            <li data-translate="services_telegram_f1">Monitoring sistem internal</li>
-                            <li data-translate="services_telegram_f2">Alert operasional & reporting</li>
-                            <li data-translate="services_telegram_f3">Bot Telegram untuk internal staff</li>
-                            <li data-translate="services_telegram_f4">Orkestrasi workflow</li>
-                        </ul>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-cogs"></i> <span data-translate="services_core_title">Orkestrasi Workflow Inti</span></h3>
-                        <p data-translate="services_core_desc">Integrasi end-to-end yang menghubungkan sistem bank dengan platform komunikasi.</p>
-                        <ul>
-                            <li data-translate="services_core_f1">Data processing & validation</li>
-                            <li data-translate="services_core_f2">Trigger berbasis event & waktu</li>
-                            <li data-translate="services_core_f3">Konektor ke Core Banking & MIS</li>
-                            <li data-translate="services_core_f4">Manajemen log dan audit trail</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <script>
+    /* ================= TRANSLATIONS ================= */
+    const translations = {
+      id: {
+        title: "Solusi Automasi Enterprise",
+        subtitle: "Layanan automasi bisnis profesional untuk perusahaan, institusi, dan organisasi.",
+        wa_bubble: "<strong>Konsultasi Automasi</strong><br>Gratis & Rahasia",
+        wa_message: "Halo, saya ingin konsultasi terkait solusi automasi bisnis. Mohon informasinya. Terima kasih.",
+        page_title: "Solusi Automasi Enterprise"
+      },
+      en: {
+        title: "Enterprise Automation Solutions",
+        subtitle: "Professional business automation services for companies and institutions.",
+        wa_bubble: "<strong>Automation Consultation</strong><br>Free & Confidential",
+        wa_message: "Hello, I would like to consult regarding business automation solutions. Thank you.",
+        page_title: "Enterprise Automation Solutions"
+      }
+    };
 
-        <!-- =================== USE CASE UNTUK BANK =================== -->
-        <section id="use-case">
-            <div class="container section-content-wrapper">
-                <h2 class="animate-text-item" data-translate="usecase_title">Use Case untuk Perbankan</h2>
-                <div class="grid">
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-tasks"></i> <span data-translate="usecase_1_title">Notifikasi Status Pengajuan</span></h3>
-                        <p data-translate="usecase_1_desc">Memberikan update real-time kepada unit terkait mengenai status pengajuan kredit, pembukaan rekening, atau layanan lainnya, tanpa mengungkap data sensitif.</p>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-exclamation-triangle"></i> <span data-translate="usecase_2_title">Alert Exception Operasional</span></h3>
-                        <p data-translate="usecase_2_desc">Notifikasi instan kepada tim operasional dan manajemen saat terjadi penyimpangan transaksi, kegagalan sistem, atau aktivitas yang memerlukan perhatian segera.</p>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-bell"></i> <span data-translate="usecase_3_title">Reminder Tugas & Approval</span></h3>
-                        <p data-translate="usecase_3_desc">Mengotomatiskan pengingat untuk tugas yang mendekati deadline, SLA, atau permintaan approval yang masih menunggu, memastikan tidak ada proses yang terhambat.</p>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-chart-line"></i> <span data-translate="usecase_4_title">Monitoring SLA Unit Kerja</span></h3>
-                        <p data-translate="usecase_4_desc">Laporan berkala otomatis mengenai kinerja SLA setiap unit kerja, dikirim langsung ke manajemen untuk evaluasi dan pengambilan keputusan.</p>
-                    </div>
-                    <div class="card animate-text-item">
-                        <h3><i class="fas fa-file-alt"></i> <span data-translate="usecase_5_title">Laporan Otomatis ke Manajemen</span></h3>
-                        <p data-translate="usecase_5_desc">Menyusun dan mengirim ringkasan laporan operasional harian/mingguan (misal: jumlah transaksi, jumlah nasabah yang dilayani) melalui grup chat manajemen.</p>
-                    </div>
-                </div>
-                <p class="animate-text-item" style="text-align: center; margin-top: 40px; font-style: italic; color: var(--text-color);" data-translate="usecase_note">
-                    <strong>Catatan Penting:</strong> Solusi kami tidak mencakup eksekusi transaksi finansial langsung melalui platform chat.
-                </p>
-            </div>
-        </section>
+    const phoneNumber = "6281216691888";
+    const langButtons = document.querySelectorAll(".lang-btn");
+    const translateEls = document.querySelectorAll("[data-translate]");
+    const waButton = document.getElementById("waButton");
+    const waBox = document.getElementById("waBox");
 
-        <!-- =================== ARSITEKTUR TEKNOLOGI =================== -->
-        <section id="arsitektur" style="background-color: var(--light-color);">
-            <div class="container section-content-wrapper">
-                <div class="section-content">
-                    <h2 class="animate-text-item" data-translate="arch_title">Arsitektur Teknologi</h2>
-                    <p class="animate-text-item" data-translate="arch_desc">Kami membangun jembatan yang aman dan andal antara sistem inti bank dengan ekosistem komunikasi digital. Arsitektur kami dirancang untuk meminimalkan risiko dan memaksimalkan keandalan.</p>
-                    
-                    <div class="arch-diagram">
-                        <div class="arch-box animate-text-item">
-                            <i class="fas fa-server fa-2x"></i>
-                            <h4 data-translate="arch_box1_title">Sistem Inti Bank</h4>
-                            <p data-translate="arch_box1_desc">Core Banking, MIS, Aplikasi Internal</p>
-                        </div>
-                        <div class="arch-arrow"><i class="fas fa-arrow-right"></i></div>
-                        <div class="arch-box animate-text-item">
-                            <i class="fas fa-shield-alt fa-2x"></i>
-                            <h4 data-translate="arch_box2_title">Secure Gateway Kami</h4>
-                            <p data-translate="arch_box2_desc">Validasi, Enkripsi, & Orkestrasi</p>
-                        </div>
-                        <div class="arch-arrow"><i class="fas fa-arrow-right"></i></div>
-                        <div class="arch-box animate-text-item">
-                            <i class="fas fa-comments fa-2x"></i>
-                            <h4 data-translate="arch_box3_title">Messaging Platform</h4>
-                            <p data-translate="arch_box3_desc">WhatsApp & Telegram API</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+    function setLanguage(lang) {
+      localStorage.setItem("lang", lang);
+      document.documentElement.lang = lang;
+      document.title = translations[lang].page_title;
 
-        <!-- =================== KEAMANAN & KEPATUHAN =================== -->
-        <section id="keamanan">
-            <div class="container section-content-wrapper">
-                <div class="section-content">
-                    <h2 class="animate-text-item" data-translate="security_title">Keamanan & Kepatuhan</h2>
-                    <p class="animate-text-item" data-translate="security_desc">Kepercayaan adalah fondasi industri keuangan. Oleh karena itu, setiap lini solusi kami dibangun di atas prinsip keamanan dan kepatuhan yang tidak dapat ditawar.</p>
-                    
-                    <div class="grid">
-                        <div class="card animate-text-item">
-                            <h3><i class="fas fa-database"></i> <span data-translate="security_1_title">No Sensitive Data Storage</span></h3>
-                            <p data-translate="security_1_desc">Platform pesan tidak digunakan untuk menyimpan data finansial atau informasi nasabah yang sensitif. Kami hanya mengirimkan notifikasi dan token yang tidak bersifat rahasia.</p>
-                        </div>
-                        <div class="card animate-text-item">
-                            <h3><i class="fas fa-user-lock"></i> <span data-translate="security_2_title">Role-Based Access Control</span></h3>
-                            <p data-translate="security_2_desc">Akses untuk mengonfigurasi dan memantau sistem dibatasi secara ketat berdasarkan peran dan tanggung jawab pengguna di dalam institusi.</p>
-                        </div>
-                        <div class="card animate-text-item">
-                            <h3><i class="fas fa-history"></i> <span data-translate="security_3_title">Activity Logging & Audit Trail</span></h3>
-                            <p data-translate="security_3_desc">Semua aktivitas sistem, setiap notifikasi yang terkirim, dan setiap interaksi bot dicatat secara lengkap untuk keperluan audit dan investigasi.</p>
-                        </div>
-                         <div class="card animate-text-item">
-                            <h3><i class="fas fa-balance-scale"></i> <span data-translate="security_4_title">Compliance-Driven Implementation</span></h3>
-                            <p data-translate="security_4_desc">Proses implementasi kami selalu disesuaikan dengan kebijakan internal bank dan regulasi dari otoritas jasa keuangan yang berlaku.</p>
-                        </div>
-                    </div>
+      langButtons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
 
-                    <div class="compliance-notice animate-text-item">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span data-translate="security_compliance_statement"><strong>Pernyataan Kepatuhan:</strong> Messaging platforms are used exclusively for notification and workflow support, not for executing financial transactions.</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+      translateEls.forEach(el => {
+        const key = el.dataset.translate;
+        el.innerHTML = translations[lang][key];
+      });
 
-        <!-- =================== ENGAGEMENT MODEL =================== -->
-        <section id="engagement" style="background-color: var(--light-color);">
-            <div class="container section-content-wrapper">
-                <h2 class="animate-text-item" data-translate="engagement_title">Engagement Model</h2>
-                <p class="animate-text-item" style="text-align: center; max-width: 600px; margin: 0 auto;" data-translate="engagement_desc">Kami mendekati setiap proyek dengan metodologi yang terstruktur untuk memastikan solusi yang kami berikan tepat sasaran, aman, dan memberikan nilai nyata.</p>
-                
-                <div class="timeline">
-                    <div class="timeline-item left">
-                        <div class="timeline-content animate-text-item">
-                            <h3 data-translate="engagement_step1_title">1. Assessment</h3>
-                            <p data-translate="engagement_step1_desc">Analisis mendalam terhadap kebutuhan, proses bisnis, dan landscape keamanan & kepatuhan institusi Anda.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item right">
-                        <div class="timeline-content animate-text-item">
-                            <h3 data-translate="engagement_step2_title">2. Desain Workflow</h3>
-                            <p data-translate="engagement_step2_desc">Merancang alur automasi yang disesuaikan dengan kebijakan internal, termasuk penentuan trigger, pesan, dan penerima notifikasi.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item left">
-                        <div class="timeline-content animate-text-item">
-                            <h3 data-translate="engagement_step3_title">3. Implementasi Bertahap</h3>
-                            <p data-translate="engagement_step3_desc">Melakukan pengembangan dan implementasi secara bertahap (phased approach) untuk meminimalkan gangguan operasional.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item right">
-                        <div class="timeline-content animate-text-item">
-                            <h3 data-translate="engagement_step4_title">4. Dokumentasi & Knowledge Transfer</h3>
-                            <p data-translate="engagement_step4_desc">Menyediakan dokumentasi teknis dan pengguna yang lengkap, serta sesi pelatihan untuk tim internal Anda.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+      waButton.href =
+        "https://wa.me/" +
+        phoneNumber +
+        "?text=" +
+        encodeURIComponent(translations[lang].wa_message);
+    }
 
-        <!-- =================== CALL TO ACTION =================== -->
-        <section id="kontak">
-            <div class="container section-content-wrapper">
-                <h2 class="animate-text-item" data-translate="cta_title">Siap Meningkatkan Efisiensi Operasional Anda?</h2>
-                <p class="animate-text-item" data-translate="cta_desc">Jadwalkan diskusi konfidensial dengan tim konsultan kami untuk mengeksplorasi bagaimana solusi automasi dapat disesuaikan dengan kebutuhan spesifik institusi Anda.</p>
-                <div class="cta-buttons">
-                    <a href="mailto:consult@finsecure-automation.com" class="btn btn-outline animate-text-item" data-translate="cta_btn1">Request Demo</a>
-                    <a href="mailto:consult@finsecure-automation.com" class="btn btn-outline animate-text-item" data-translate="cta_btn2">Jadwalkan Diskusi Aman</a>
-                    <a href="mailto:consult@finsecure-automation.com" class="btn btn-primary animate-text-item" data-translate="cta_btn3">Kontak Konsultan Automasi</a>
-                </div>
-            </div>
-        </section>
-    </main>
+    langButtons.forEach(btn => {
+      btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
+    });
 
-    <!-- =================== FOOTER =================== -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 FinSecure Automation Solutions. All Rights Reserved.</p>
-            <p>Email Resmi: <a href="mailto:consult@finsecure-automation.com">consult@finsecure-automation.com</a></p>
-            <div class="footer-disclaimer">
-                <p data-translate="footer_disclaimer"><strong>Disclaimer Kepatuhan:</strong> All automation solutions are designed in accordance with internal policies and applicable regulations.</p>
-            </div>
-        </div>
-    </footer>
+    /* Init language */
+    setLanguage(localStorage.getItem("lang") || "id");
 
-    <!-- =================== FLOATING WHATSAPP BUTTON =================== -->
-    <a href="https://wa.me/6281216691888?text=Halo%20kak,%20mau%20konsultasi%20automasi" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-        <span class="wa-tooltip" data-translate="wa_tooltip">Hubungi kami via WhatsApp</span>
-    </a>
-
-
-    <script>
-        // --- COMPLETE Multi-Language Data ---
-        const translations = {
-            en: {
-                page_title: "FinSecure Automation - Enterprise Communication Automation for Financial Institutions",
-                nav_about: "About Us",
-                nav_services: "Services",
-                nav_usecase: "Use Cases",
-                nav_architecture: "Architecture",
-                nav_security: "Security",
-                nav_contact: "Contact",
-                hero_headline: "Secure Communication Automation for Financial Institutions",
-                hero_subheadline: "Automate notifications, approvals, and operational bank monitoring through WhatsApp and Telegram integration.",
-                hero_cta: "🔘 Request Confidential Consultation",
-                about_title: "About Us",
-                about_p1: "We are a strategic partner for financial institutions facing the digital transformation era. With deep experience in the banking industry, we understand that operational efficiency must align with strict security and compliance principles.",
-                about_p2: "Our focus is on building digital communication and workflow automation solutions that not only accelerate processes but also strengthen internal control and management visibility. Every solution we design is a secure and reliable extension of your IT infrastructure, ensuring every notification and workflow runs according to internal policies and applicable regulations.",
-                services_title: "Main Services",
-                services_whatsapp_title: "WhatsApp Automation (Enterprise Use)",
-                services_whatsapp_desc: "Leveraging the WhatsApp Business API for efficient and controlled internal communication.",
-                services_whatsapp_f1: "Non-financial transaction notifications",
-                services_whatsapp_f2: "Approval workflow via WhatsApp",
-                services_whatsapp_f3: "Operational & SLA reminders",
-                services_whatsapp_f4: "WhatsApp Business API integration",
-                services_telegram_title: "Telegram Automation",
-                services_telegram_desc: "Optimizing Telegram as a fast and secure tool for monitoring and team coordination.",
-                services_telegram_f1: "Internal system monitoring",
-                services_telegram_f2: "Operational alerts & reporting",
-                services_telegram_f3: "Telegram bot for internal staff",
-                services_telegram_f4: "Workflow orchestration",
-                services_core_title: "Core Workflow Orchestration",
-                services_core_desc: "End-to-end integration connecting the bank's core systems with communication platforms.",
-                services_core_f1: "Data processing & validation",
-                services_core_f2: "Event & time-based triggers",
-                services_core_f3: "Connectors to Core Banking & MIS",
-                services_core_f4: "Log management & audit trail",
-                usecase_title: "Banking Use Cases",
-                usecase_1_title: "Application Status Notifications",
-                usecase_1_desc: "Provide real-time updates to relevant units on the status of credit applications, account openings, or other services, without revealing sensitive data.",
-                usecase_2_title: "Operational Exception Alerts",
-                usecase_2_desc: "Instant notifications to the operations team and management when transaction deviations, system failures, or activities requiring immediate attention occur.",
-                usecase_3_title: "Task & Approval Reminders",
-                usecase_3_desc: "Automate reminders for tasks approaching deadlines, SLAs, or pending approval requests, ensuring no process is hindered.",
-                usecase_4_title: "Work Unit SLA Monitoring",
-                usecase_4_desc: "Automatic periodic reports on the SLA performance of each work unit, sent directly to management for evaluation and decision-making.",
-                usecase_5_title: "Automatic Reports to Management",
-                usecase_5_desc: "Compile and send summaries of daily/weekly operational reports (e.g., number of transactions, customers served) via management chat groups.",
-                usecase_note: "<strong>Important Note:</strong> Our solutions do not include direct execution of financial transactions through chat platforms.",
-                arch_title: "Technology Architecture",
-                arch_desc: "We build a secure and reliable bridge between the bank's core systems and the digital communication ecosystem. Our architecture is designed to minimize risk and maximize reliability.",
-                arch_box1_title: "Bank's Core Systems",
-                arch_box1_desc: "Core Banking, MIS, Internal Apps",
-                arch_box2_title: "Our Secure Gateway",
-                arch_box2_desc: "Validation, Encryption, & Orchestration",
-                arch_box3_title: "Messaging Platforms",
-                arch_box3_desc: "WhatsApp & Telegram API",
-                security_title: "Security & Compliance",
-                security_desc: "Trust is the foundation of the financial industry. Therefore, every line of our solution is built on non-negotiable principles of security and compliance.",
-                security_1_title: "No Sensitive Data Storage",
-                security_1_desc: "Messaging platforms are not used to store financial data or sensitive customer information. We only send non-confidential notifications and tokens.",
-                security_2_title: "Role-Based Access Control",
-                security_2_desc: "Access to configure and monitor the system is strictly restricted based on the user's role and responsibilities within the institution.",
-                security_3_title: "Activity Logging & Audit Trail",
-                security_3_desc: "All system activities, every notification sent, and every bot interaction are fully logged for audit and investigation purposes.",
-                security_4_title: "Compliance-Driven Implementation",
-                security_4_desc: "Our implementation process is always tailored to the bank's internal policies and regulations from the financial services authority.",
-                security_compliance_statement: "<strong>Compliance Statement:</strong> Messaging platforms are used exclusively for notification and workflow support, not for executing financial transactions.",
-                engagement_title: "Engagement Model",
-                engagement_desc: "We approach every project with a structured methodology to ensure the solutions we provide are on-target, secure, and deliver real value.",
-                engagement_step1_title: "1. Assessment",
-                engagement_step1_desc: "In-depth analysis of needs, business processes, and your institution's security & compliance landscape.",
-                engagement_step2_title: "2. Workflow Design",
-                engagement_step2_desc: "Designing an automation flow tailored to internal policies, including determining triggers, messages, and notification recipients.",
-                engagement_step3_title: "3. Phased Implementation",
-                engagement_step3_desc: "Conducting development and implementation in phases (phased approach) to minimize operational disruption.",
-                engagement_step4_title: "4. Documentation & Knowledge Transfer",
-                engagement_step4_desc: "Providing complete technical and user documentation, as well as training sessions for your internal team.",
-                cta_title: "Ready to Enhance Your Operational Efficiency?",
-                cta_desc: "Schedule a confidential discussion with our consultant team to explore how automation solutions can be tailored to your institution's specific needs.",
-                cta_btn1: "Request Demo",
-                cta_btn2: "Schedule Secure Discussion",
-                cta_btn3: "Contact Automation Consultant",
-                footer_disclaimer: "<strong>Compliance Disclaimer:</strong> All automation solutions are designed in accordance with internal policies and applicable regulations.",
-                wa_message: "Hello, I'd like to consult about automation",
-                wa_tooltip: "Contact us on WhatsApp"
-            },
-            id: {
-                page_title: "FinSecure Automation - Automasi Komunikasi Enterprise untuk Lembaga Keuangan",
-                nav_about: "Tentang Kami",
-                nav_services: "Layanan",
-                nav_usecase: "Use Case",
-                nav_architecture: "Arsitektur",
-                nav_security: "Keamanan",
-                nav_contact: "Kontak",
-                hero_headline: "Automasi Komunikasi Aman untuk Lembaga Keuangan",
-                hero_subheadline: "Automasi notifikasi, approval, dan monitoring operasional bank melalui integrasi WhatsApp, Telegram.",
-                hero_cta: "🔘 Request Konsultasi Konfidensial",
-                about_title: "Tentang Kami",
-                about_p1: "Kami adalah mitra strategis bagi institusi keuangan dalam menghadapi era transformasi digital. Dengan pengalaman mendalam di industri perbankan, kami memahami bahwa efisiensi operasional harus sejalan dengan prinsip keamanan dan kepatuhan yang ketat.",
-                about_p2: "Fokus kami adalah membangun solusi automasi komunikasi dan workflow digital yang tidak hanya mempercepat proses, tetapi juga memperkuat kontrol internal dan visibilitas manajemen. Setiap solusi kami dirancang untuk menjadi ekstensi yang aman dan andal dari infrastruktur TI Anda, memastikan setiap notifikasi dan alur kerja berjalan sesuai dengan kebijakan internal dan regulasi yang berlaku.",
-                services_title: "Layanan Utama",
-                services_whatsapp_title: "WhatsApp Automation (Enterprise Use)",
-                services_whatsapp_desc: "Memanfaatkan WhatsApp Business API untuk komunikasi internal yang efisien dan terkontrol.",
-                services_whatsapp_f1: "Notifikasi transaksi non-finansial",
-                services_whatsapp_f2: "Approval workflow via WhatsApp",
-                services_whatsapp_f3: "Reminder operasional & SLA",
-                services_whatsapp_f4: "Integrasi WhatsApp Business API",
-                services_telegram_title: "Telegram Automation",
-                services_telegram_desc: "Mengoptimalkan Telegram sebagai alat monitoring dan koordinasi tim yang cepat dan aman.",
-                services_telegram_f1: "Monitoring sistem internal",
-                services_telegram_f2: "Alert operasional & reporting",
-                services_telegram_f3: "Bot Telegram untuk internal staff",
-                services_telegram_f4: "Orkestrasi workflow",
-                services_core_title: "Orkestrasi Workflow Inti",
-                services_core_desc: "Integrasi end-to-end yang menghubungkan sistem bank dengan platform komunikasi.",
-                services_core_f1: "Data processing & validation",
-                services_core_f2: "Trigger berbasis event & waktu",
-                services_core_f3: "Konektor ke Core Banking & MIS",
-                services_core_f4: "Manajemen log dan audit trail",
-                usecase_title: "Use Case untuk Perbankan",
-                usecase_1_title: "Notifikasi Status Pengajuan",
-                usecase_1_desc: "Memberikan update real-time kepada unit terkait mengenai status pengajuan kredit, pembukaan rekening, atau layanan lainnya, tanpa mengungkap data sensitif.",
-                usecase_2_title: "Alert Exception Operasional",
-                usecase_2_desc: "Notifikasi instan kepada tim operasional dan manajemen saat terjadi penyimpangan transaksi, kegagalan sistem, atau aktivitas yang memerlukan perhatian segera.",
-                usecase_3_title: "Reminder Tugas & Approval",
-                usecase_3_desc: "Mengotomatiskan pengingat untuk tugas yang mendekati deadline, SLA, atau permintaan approval yang masih menunggu, memastikan tidak ada proses yang terhambat.",
-                usecase_4_title: "Monitoring SLA Unit Kerja",
-                usecase_4_desc: "Laporan berkala otomatis mengenai kinerja SLA setiap unit kerja, dikirim langsung ke manajemen untuk evaluasi dan pengambilan keputusan.",
-                usecase_5_title: "Laporan Otomatis ke Manajemen",
-                usecase_5_desc: "Menyusun dan mengirim ringkasan laporan operasional harian/mingguan (misal: jumlah transaksi, jumlah nasabah yang dilayani) melalui grup chat manajemen.",
-                usecase_note: "<strong>Catatan Penting:</strong> Solusi kami tidak mencakup eksekusi transaksi finansial langsung melalui platform chat.",
-                arch_title: "Arsitektur Teknologi",
-                arch_desc: "Kami membangun jembatan yang aman dan andal antara sistem inti bank dengan ekosistem komunikasi digital. Arsitektur kami dirancang untuk meminimalkan risiko dan memaksimalkan keandalan.",
-                arch_box1_title: "Sistem Inti Bank",
-                arch_box1_desc: "Core Banking, MIS, Aplikasi Internal",
-                arch_box2_title: "Secure Gateway Kami",
-                arch_box2_desc: "Validasi, Enkripsi, & Orkestrasi",
-                arch_box3_title: "Messaging Platform",
-                arch_box3_desc: "WhatsApp & Telegram API",
-                security_title: "Keamanan & Kepatuhan",
-                security_desc: "Kepercayaan adalah fondasi industri keuangan. Oleh karena itu, setiap lini solusi kami dibangun di atas prinsip keamanan dan kepatuhan yang tidak dapat ditawar.",
-                security_1_title: "No Sensitive Data Storage",
-                security_1_desc: "Platform pesan tidak digunakan untuk menyimpan data finansial atau informasi nasabah yang sensitif. Kami hanya mengirimkan notifikasi dan token yang tidak bersifat rahasia.",
-                security_2_title: "Role-Based Access Control",
-                security_2_desc: "Akses untuk mengonfigurasi dan memantau sistem dibatasi secara ketat berdasarkan peran dan tanggung jawab pengguna di dalam institusi.",
-                security_3_title: "Activity Logging & Audit Trail",
-                security_3_desc: "Semua aktivitas sistem, setiap notifikasi yang terkirim, dan setiap interaksi bot dicatat secara lengkap untuk keperluan audit dan investigasi.",
-                security_4_title: "Compliance-Driven Implementation",
-                security_4_desc: "Proses implementasi kami selalu disesuaikan dengan kebijakan internal bank dan regulasi dari otoritas jasa keuangan yang berlaku.",
-                security_compliance_statement: "<strong>Pernyataan Kepatuhan:</strong> Messaging platforms are used exclusively for notification and workflow support, not for executing financial transactions.",
-                engagement_title: "Engagement Model",
-                engagement_desc: "Kami mendekati setiap proyek dengan metodologi yang terstruktur untuk memastikan solusi yang kami berikan tepat sasaran, aman, dan memberikan nilai nyata.",
-                engagement_step1_title: "1. Assessment",
-                engagement_step1_desc: "Analisis mendalam terhadap kebutuhan, proses bisnis, dan landscape keamanan & kepatuhan institusi Anda.",
-                engagement_step2_title: "2. Desain Workflow",
-                engagement_step2_desc: "Merancang alur automasi yang disesuaikan dengan kebijakan internal, termasuk penentuan trigger, pesan, dan penerima notifikasi.",
-                engagement_step3_title: "3. Implementasi Bertahap",
-                engagement_step3_desc: "Melakukan pengembangan dan implementasi secara bertahap (phased approach) untuk meminimalkan gangguan operasional.",
-                engagement_step4_title: "4. Dokumentasi & Knowledge Transfer",
-                engagement_step4_desc: "Menyediakan dokumentasi teknis dan pengguna yang lengkap, serta sesi pelatihan untuk tim internal Anda.",
-                cta_title: "Siap Meningkatkan Efisiensi Operasional Anda?",
-                cta_desc: "Jadwalkan diskusi konfidensial dengan tim konsultan kami untuk mengeksplorasi bagaimana solusi automasi dapat disesuaikan dengan kebutuhan spesifik institusi Anda.",
-                cta_btn1: "Request Demo",
-                cta_btn2: "Jadwalkan Diskusi Aman",
-                cta_btn3: "Kontak Konsultan Automasi",
-                footer_disclaimer: "<strong>Disclaimer Kepatuhan:</strong> All automation solutions are designed in accordance with internal policies and applicable regulations.",
-                wa_message: "Halo kak, mau konsultasi automasi",
-                wa_tooltip: "Hubungi kami via WhatsApp"
-            }
-        };
-
-        // --- Language Switching Logic ---
-        const langButtons = document.querySelectorAll('.lang-btn');
-        const elementsToTranslate = document.querySelectorAll('[data-translate]');
-        const navLinksToTranslate = document.querySelectorAll('[data-translate-link]');
-        const waButton = document.querySelector('.whatsapp-float');
-        
-        function setLanguage(lang) {
-            localStorage.setItem('selectedLanguage', lang);
-            document.documentElement.lang = lang;
-
-            // Update button states
-            langButtons.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-            });
-
-            // Update text content
-            elementsToTranslate.forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
-                }
-            });
-
-            // Update navigation links
-            navLinksToTranslate.forEach(link => {
-                const key = link.getAttribute('data-translate-link');
-                if (translations[lang][key]) {
-                    link.textContent = translations[lang][key];
-                }
-            });
-
-            // Update WhatsApp link
-            updateWhatsAppLink(lang);
-        }
-        
-        // Function to update WhatsApp link
-        function updateWhatsAppLink(lang) {
-            if (waButton) {
-                const phoneNumber = '6281216691888';
-                const message = translations[lang].wa_message;
-                const encodedMessage = encodeURIComponent(message);
-                waButton.href = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-            }
-        }
-
-//kkk
-        // --- Text Animation Logic ---
-        function triggerAnimation(targetSection) {
-            const wrapper = targetSection.querySelector('.section-content-wrapper');
-            if (wrapper) {
-                wrapper.classList.remove('animate-text');
-                void wrapper.offsetWidth;
-                wrapper.classList.add('animate-text');
-            }
-        }
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedLang = localStorage.getItem('selectedLanguage') || 'id';
-            setLanguage(savedLang);
-
-            langButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    setLanguage(button.getAttribute('data-lang'));
-                });
-            });
-
-            const navLinks = document.querySelectorAll('.nav-links a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    const targetId = link.getAttribute('href');
-                    const targetSection = document.querySelector(targetId);
-                    if (targetSection) {
-                        setTimeout(() => {
-                            triggerAnimation(targetSection);
-                        }, 300);
-                    }
-                });
-            });
-            
-            triggerAnimation(document.querySelector('#hero'));
-
-            // --- Active Navigation Link on Scroll ---
-            const sections = document.querySelectorAll('section[id]');
-
-            const setActiveLink = () => {
-                const scrollY = window.pageYOffset;
-                sections.forEach(section => {
-                    const sectionHeight = section.offsetHeight;
-                    const sectionTop = section.offsetTop - 100;
-                    const sectionId = section.getAttribute('id');
-                    const correspondingLink = document.querySelector(`.nav-links a[href="#${sectionId}"]`);
-
-                    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                        navLinks.forEach(l => l.classList.remove('active-link'));
-                        if (correspondingLink) {
-                            correspondingLink.classList.add('active-link');
-                        }
-                    }
-                });
-            };
-
-            window.addEventListener('load', setActiveLink);
-            window.addEventListener('scroll', setActiveLink);
-        });
-
-        // --- Simple header scroll effect ---
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.style.padding = '10px 0';
-                header.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-            } else {
-                header.style.padding = '15px 0';
-                header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.05)';
-            }
-        });
-
-        // --- Mobile Menu Toggle (Optional) ---
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            alert('Mobile menu would open here. For a real site, a slide-in panel would be implemented.');
-        });
-
-    </script>
+    /* Office hour control (08–17 WIB) */
+    (function () {
+      const hour = new Date().getHours();
+      if (hour < 8 || hour >= 17) {
+        waBox.style.display = "none";
+      }
+    })();
+  </script>
 
 </body>
 </html>
